@@ -1860,12 +1860,12 @@ pal();render();
 setTimeout(goToday,50);
 /* ===== Cloud Firestore ===== */
 var firebaseConfig={
-  apiKey:"AIzaSyBfLeiPGAa_9QjtUF7piRANhoseqC-yCq0",
+  apiKey:"AIzaSyBfleiPGaA_9QjtUf7piRANhoseqC-yCqU",
   authDomain:"lmd-web2.firebaseapp.com",
   projectId:"lmd-web2",
   storageBucket:"lmd-web2.firebasestorage.app",
-  messagingSenderId:"87920044556",
-  appId:"1:87920044556:web:6d569eb0932461c8dd4029"
+  messagingSenderId:"879200044556",
+  appId:"1:879200044556:web:6d569eb0932461c8ddd029"
 };
 DL={save:function(o){return new Promise(function(ok){var a=document.createElement("a"),u=URL.createObjectURL(o.data);a.href=u;a.download=o.filename;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},4000);ok()})}};
 function lgMsg(t){$("lgm").textContent=t||""}
