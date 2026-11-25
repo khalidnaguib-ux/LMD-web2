@@ -3,7 +3,7 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<title>LMD web2 v04</title>
+<title>LMD web2 v05</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -81,14 +81,14 @@ td.c small.vc{display:block;font-size:9px;font-weight:400;line-height:1;margin-t
 </head>
 <body>
 <header>
-<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">LMD web2 v04</div></div><button id="nx">›</button></div>
+<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">LMD web2 v05</div></div><button id="nx">›</button></div>
 <div class="pal" id="pal"></div>
 <div class="hint"><span id="st">…</span></div><div id="bkn" class="hint" style="display:none;color:#d2691e"></div>
 </header>
 <div class="w"><table id="tb"></table></div>
 <div class="bar" id="tbar"><button id="un" disabled style="opacity:.4">↶ Undo</button><button id="bk">⬇ Backup</button><button id="pd">Month PDF</button><button id="p2">Overtime PDF</button><button id="mm">📊 LMD Monthly</button><button id="fx">🗂 Create form</button><button id="nm">Names</button><button id="cb">Contacts</button><button id="rc">📒 Roll-call</button><button id="rp">📥 Shift report</button><button id="fu">📊 Follow-up</button><button id="al">🗓 Landmark archive</button><button id="ar">🔒 Archive</button><button id="xl">📗 Excel</button><button id="tr">📋 Track forms</button><button id="py">💰 Payroll</button><button id="hs">📲 Home Screen</button><button id="tbs">✎ Arrange icons</button><button id="tbr">↺ Original order</button><div id="tbh" style="display:none">Tap one icon, then tap another to swap them. Tap “Done” when finished.</div></div>
 <div id="er"></div><div id="sh"></div>
-<div id="lg"><div><b>LMD web2 v04</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
+<div id="lg"><div><b>LMD web2 v05</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
 <script>
 var $=function(i){return document.getElementById(i)};
 var K=[["D","نهاري"],["N","ليلي"],["DS","تطبيق"],["V","إجازة"],["Z","مرضي"],["C","عارضة"],["A","غياب"],["S","طبي"],["SM","نقل"]];
@@ -167,6 +167,7 @@ function raisedOf(id,D){var last="",r=false;D.forEach(function(d){var k0=key(d);
 function jDay(id){var c=RO.c[id]||{},j=c.d||c.dc||"";if(j)return j;var D=days(),i=0;while(i<D.length&&get(id,key(D[i]))=="R")i++;return i>0&&i<D.length?key(D[i]):""}
 function jBef(id,k){var j=jDay(id);return!!j&&k<j}
 function jAtt(t){return(t.D||0)+(t.N||0)+(t.DS||0)+(t.Z||0)+(t.C||0)+(t.S||0)+(t.SM||0)}
+function jVok(id,k){var j=jDay(id);if(!j||j<=key(days()[0]))return"";var ab=0,vu=0,AT={D:1,N:1,DS:1,Z:1,C:1,S:1,SM:1};days().forEach(function(d){var q=key(d);if(q<j)return;var c=get(id,q);if(q<k&&AT[c])ab++;if(q!=k&&c=="V")vu++});return vu+1>Math.floor(ab/6)?"a new joiner earns 1 leave day per 6 days worked ("+ab+" worked before this day, "+vu+" leave already used)":""}
 function tot(id){var o={},j=jDay(id);K.forEach(function(k){o[k[0]]=0});days().forEach(function(d){var k=key(d);if(j&&k<j)return;var c=get(id,k);if(c&&o[c]!=null)o[c]++});return o}
 function load(){
   var my=++tk;ready=false;cells={};hist=[];updUndo();
@@ -216,6 +217,7 @@ $("tb").onclick=function(e){
   if(get(p[3],k)=="R"&&brush){err("⛔ Not allowed: this day is blocked (OUT) — "+brush+" can’t be marked on a black square","#d64545",5000);return}
   var nv0=(get(p[3],k)==brush)?"":brush;
   if(nv0=="V"&&tot(p[3]).V>=5){err("Max five V in a period");return}
+  if(nv0=="V"){var jv=jVok(p[3],k);if(jv){err("⛔ Not allowed: "+jv,"#d64545",5500);return}}
   var gi0=parseInt(c.dataset.r.split("_")[0]),ng0=(gi0==3||(gi0<2&&p[2]=="N"));
   if(nv0=="V"&&gi0>=2){var cn0=0;LY.forEach(function(g,gx){if(gx<2)return;g[1].forEach(function(q){if(q[3]!=p[3]&&(gx==3)==ng0&&get(q[3],k)=="V")cn0++})});if(cn0>=2){err("⛔ Not allowed: already 2 guards on leave (V) in the "+(ng0?"night":"day")+" shift on this day","#d64545",5000);return}}
   if(nv0=="DS"&&p[3]!="m1"){var q=k.split("-"),dd=function(n){return key(new Date(+q[0],+q[1]-1,+q[2]+n))};if(get(p[3],dd(-1))=="DS"||get(p[3],dd(1))=="DS"){err("DS can’t be on consecutive days");return}}
@@ -957,16 +959,17 @@ function pySet(k,f,v){var p=pyS();p[k]=Object.assign({},p[k]);p[k][f]=v;RO.f=Obj
 function pySetP(id,v){var p=pyS();p.p=Object.assign({},p.p);if(v==='')delete p.p[id];else p.p[id]=v;RO.f=Object.assign({},RO.f,{pay:p});saveRO();pyOpen()}
 function r2(x){return Math.round(x*100)/100}
 function pyEnt(id,a,b){var j=jDay(id);if(!j||j<=a)return{e:5,w:30,late:false};var w=Math.max(0,Math.round((new Date(b+'T12:00:00')-new Date(j+'T12:00:00'))/864e5)+1);return{e:Math.min(5,Math.floor(jAtt(tot(id))/6)),w:Math.min(30,w),late:true}}
+function pnDays(t){t=String(t||"").replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632}).replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه");if(!/خصم/.test(t))return 0;if(/نصف\s*يوم/.test(t))return .5;if(/ربع\s*يوم/.test(t))return .25;var m=t.match(/(\d+(?:\.\d+)?)\s*(?:يوم|ايام)/);if(m)return+m[1];if(/يومين/.test(t))return 2;if(/ثلاثه\s*ايام/.test(t))return 3;if(/اربعه\s*ايام/.test(t))return 4;if(/خمسه\s*ايام/.test(t))return 5;return /يوم/.test(t)?1:0}
 function pyRows(){var S=pyS(),D=days(),a=key(D[0]),b=key(D[D.length-1]),rows=[];
   plist().forEach(function(z){var id=z[0][3];if(!id||RO.h[id]||resGone(id,a))return;var i=pinfo(id);if(!i)return;var c=pyCat(id,z[1]),t=tot(id),has=K.some(function(k){return t[k[0]]>0}),g=RO.g[id]==null?z[1]:RO.g[id],
     net=S.p[id]!=null?+S.p[id]:+(S[c].n||0),comp=+(S[c].c||0),unit=r2(net/30),en=pyEnt(id,a,b),paid=en.w,er=r2(net*paid/30),ent=has?en.e:0,rem=has?Math.max(0,ent-t.V):0,ex=rem+(has?t.DS:0),ot=r2(ex*unit*1.5),
-    pen=(RO.fm||[]).filter(function(e){var d=(e.v&&e.v.date)||e.d;return e.t=='pen'&&e.s=='signed'&&e.i==id&&d>=a&&d<=b}).length,ab=t.A,aa=pyAbs(id),dd=r2(aa.u*unit),cp=(!en.late&&ab==0&&pen==0)?comp:0;
-    rows.push({id:id,n:i[0][0],k:(RO.c[id]||{}).k||'',cat:PYN[c],net:net,unit:unit,pd:paid,er:er,late:en.late,ent:ent,tk:t.V,rem:rem,ds:t.DS,ex:ex,ot:ot,ab:ab,sx:(t.S||0)+(t.SM||0),du:aa.u,dd:dd,out:aa.out,runs:aa.runs.join('+'),pen:pen,comp:comp,cp:cp,rs:!!(RO.c[id]||{}).rs,ng:(g==3||(g<2&&z[0][2]=='N')),tot:r2(er+ot+cp-dd)})});
+    pl=(RO.fm||[]).filter(function(e){var d=(e.v&&e.v.date)||e.d;return e.t=='pen'&&e.s=='signed'&&e.i==id&&d>=a&&d<=b}),pen=pl.length,pdy=pl.reduce(function(q,e){return q+pnDays(e.v&&e.v.pun)},0),pdd=r2(pdy*unit),ab=t.A,aa=pyAbs(id),dd=r2(aa.u*unit),cp=(!en.late&&ab==0&&pen==0)?comp:0;
+    rows.push({id:id,n:i[0][0],k:(RO.c[id]||{}).k||'',cat:PYN[c],net:net,unit:unit,pd:paid,er:er,late:en.late,ent:ent,tk:t.V,rem:rem,ds:t.DS,ex:ex,ot:ot,ab:ab,sx:(t.S||0)+(t.SM||0),du:aa.u,dd:dd,out:aa.out,runs:aa.runs.join('+'),pen:pen,pdy:pdy,pdd:pdd,comp:comp,cp:cp,rs:!!(RO.c[id]||{}).rs,ng:(g==3||(g<2&&z[0][2]=='N')),tot:r2(er+ot+cp-dd-pdd)})});
   return rows}
 function pyOpen(){var S=pyS(),D=days(),R=pyRows(),T=0;
-  var h='<b>Payroll · '+fd(key(D[0]))+' → '+fd(key(D[D.length-1]))+'</b><div class="lb" style="font-size:12px;margin-top:6px">Daily unit = net ÷ 30. A late joiner is paid only for the days worked (net ÷ 30 × days). Leave: 5 days for a full month, 1 per 6 days worked for a late joiner; each leave day not taken (+ each Double Shift) = unit × 1.5. Absence: a single day = 2 units; 2–5 consecutive days = 2 per day + 1; more than 5 = OUT. Medical leave (S) and shift-moving leave (SM, never on consecutive days) are paid 100%: no deduction and they do not use the leave balance. Compensation (500 by default for supervisors and guards): full month only, no absence (A) and no signed penalty - a signed penalty is a deduction (خصم) of the compensation. A late joiner is counted from his first working day: leave is earned 1 per 6 days attended (any status except A and V) and OUT does not apply to the days before he joined.</div>';
+  var h='<b>Payroll · '+fd(key(D[0]))+' → '+fd(key(D[D.length-1]))+'</b><div class="lb" style="font-size:12px;margin-top:6px">Daily unit = net ÷ 30. A late joiner is paid only for the days worked (net ÷ 30 × days). Leave: 5 days for a full month, 1 per 6 days worked for a late joiner; each leave day not taken (+ each Double Shift) = unit × 1.5. Absence: a single day = 2 units; 2–5 consecutive days = 2 per day + 1; more than 5 = OUT. Medical leave (S) and shift-moving leave (SM, never on consecutive days) are paid 100%: no deduction and they do not use the leave balance. Compensation (500 by default for supervisors and guards): full month only, no absence (A) and no signed penalty - a signed penalty also withholds it. A signed penalty deducts money, read from the penalty text: خصم يوم = 1 unit, خصم نصف يوم = unit ÷ 2, خصم N أيام = N units. A late joiner is counted from his first working day: leave is earned 1 per 6 days attended (any status except A and V) and OUT does not apply to the days before he joined.</div>';
   ['m','s','f'].forEach(function(k){h+='<div class="rr"><span>'+PYN[k]+'</span><span style="font-size:13px">Net <input type="number" min="0" value="'+(S[k].n||'')+'" style="width:84px" onchange="pySet(\''+k+'\',\'n\',this.value)"> Comp. <input type="number" min="0" value="'+(S[k].c||'')+'" style="width:70px" onchange="pySet(\''+k+'\',\'c\',this.value)"></span></div>'});
-  R.forEach(function(r){T+=r.tot;h+='<div class="rr" style="flex-wrap:wrap"><span style="width:100%"><b style="color:'+(r.ng?'#0a7a35':'#0b4fb8')+(r.rs?';background:#cfe8ff;padding:0 4px;border-radius:4px':'')+'">'+esc(ppNm(r.n,3))+'</b> <span class="lb">'+esc(r.k)+' · '+r.cat+(r.late?' · joined late: '+r.pd+' days paid':'')+'</span></span><span style="font-size:12px">Net <input type="number" min="0" data-id="'+r.id+'" value="'+(r.net||'')+'" style="width:80px" onchange="pySetP(this.dataset.id,this.value)"> unit '+r.unit+(r.late?' → earned '+r.er:'')+'</span><span style="font-size:12px">Leave '+r.tk+'/'+r.ent+' → left '+r.rem+' + Double Shifts '+r.ds+' = '+r.ex+'d = <b>'+r.ot+'</b> · Abs '+r.ab+(r.ab?' ('+r.runs+') −'+r.du+'u = −'+r.dd:'')+(r.out?' · <b style="color:#d64545">OUT</b>':'')+(r.sx?' · S/SM '+r.sx+' paid 100%':'')+' · Pen '+r.pen+(r.pen&&r.comp?' (خصم)':'')+' · Comp <b>'+r.cp+'</b>'+(r.late&&r.comp?' (not a full month)':'')+'</span><span style="font-size:13px"><b>'+r.tot+'</b></span></div>'});
+  R.forEach(function(r){T+=r.tot;h+='<div class="rr" style="flex-wrap:wrap"><span style="width:100%"><b style="color:'+(r.ng?'#0a7a35':'#0b4fb8')+(r.rs?';background:#cfe8ff;padding:0 4px;border-radius:4px':'')+'">'+esc(ppNm(r.n,3))+'</b> <span class="lb">'+esc(r.k)+' · '+r.cat+(r.late?' · joined late: '+r.pd+' days paid':'')+'</span></span><span style="font-size:12px">Net <input type="number" min="0" data-id="'+r.id+'" value="'+(r.net||'')+'" style="width:80px" onchange="pySetP(this.dataset.id,this.value)"> unit '+r.unit+(r.late?' → earned '+r.er:'')+'</span><span style="font-size:12px">Leave '+r.tk+'/'+r.ent+' → left '+r.rem+' + Double Shifts '+r.ds+' = '+r.ex+'d = <b>'+r.ot+'</b> · Abs '+r.ab+(r.ab?' ('+r.runs+') −'+r.du+'u = −'+r.dd:'')+(r.out?' · <b style="color:#d64545">OUT</b>':'')+(r.sx?' · S/SM '+r.sx+' paid 100%':'')+' · Pen '+r.pen+(r.pdd?' (خصم '+r.pdy+' يوم = −'+r.pdd+')':(r.pen&&r.comp?' (خصم)':''))+' · Comp <b>'+r.cp+'</b>'+(r.late&&r.comp?' (not a full month)':'')+'</span><span style="font-size:13px"><b>'+r.tot+'</b></span></div>'});
   sheet(h+'<div class="rr"><b>Total</b><b>'+r2(T)+'</b></div><div class="bar"><button data-a="pyx">⬇ Excel</button><button data-a="x">Close</button></div>')}
 function xlsxOut(rows,widths,file){if(!DL){err('Excel export is not available here');return}
   var sd=rows.map(function(r,ri){return'<row r="'+(ri+1)+'">'+r.map(function(v,ci){if(v===''||v==null)return'';var ref=colL(ci)+(ri+1);if(typeof v=='object')return'<c r="'+ref+'"><f>'+esc(v.f)+'</f><v>'+v.v+'</v></c>';return typeof v=='number'?'<c r="'+ref+'"><v>'+v+'</v></c>':'<c r="'+ref+'" t="inlineStr"><is><t>'+esc(v)+'</t></is></c>'}).join('')+'</row>'}).join('');
@@ -979,11 +982,11 @@ function xlsxOut(rows,widths,file){if(!DL){err('Excel export is not available he
   z.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}).then(function(b){return DL.save({filename:file,data:b})}).then(function(){err('Excel saved','#2f9e5b',2500)},function(e){if(!e||e.code!='declined')err('Could not save the Excel file')})}
 function pyAbs(id){var D=days(),runs=[],n=0,out=false;D.forEach(function(d){var k0=key(d);if(jBef(id,k0))return;var c=get(id,k0);if(c=='R')out=true;if(c=='A')n++;else{if(n)runs.push(n);n=0}});if(n)runs.push(n);
   var u=0;runs.forEach(function(r){if(r>5)out=true;var m=Math.min(r,5);u+=m==1?2:2*m+1});return{u:u,runs:runs,out:out}}
-function pyXls(){var R=pyRows(),n=R.length,rows=[['م','الاسم','الكود','الوظيفة','الصافي','أيام العمل','الصافي المستحق','الوحدة (÷30)','الإجازة المستحقة','إجازات مأخوذة','إجازات متبقية','Double Shifts','أيام الإضافي','مبلغ الإضافي (×1.5)','أيام الغياب','وحدات خصم الغياب','خصم الغياب','الجزاءات','قيمة التعويض','التعويض المستحق','الإجمالي','ملاحظات']];
-  R.forEach(function(r,i){var q=i+2;rows.push([i+1,r.n,r.k,r.cat,r.net,r.pd,{f:'ROUND(E'+q+'*F'+q+'/30,2)',v:r.er},{f:'ROUND(E'+q+'/30,2)',v:r.unit},r.ent,r.tk,{f:'MAX(0,I'+q+'-J'+q+')',v:r.rem},r.ds,{f:'K'+q+'+L'+q,v:r.ex},{f:'ROUND(M'+q+'*H'+q+'*1.5,2)',v:r.ot},r.ab,r.du,{f:'ROUND(P'+q+'*H'+q+',2)',v:r.dd},r.pen,r.comp,{f:'IF(AND(O'+q+'=0,R'+q+'=0),S'+q+',0)',v:r.cp},{f:'G'+q+'+N'+q+'+T'+q+'-Q'+q,v:r.tot},(r.out?'OUT':'')+(r.rs?(r.out?' / ':'')+'مستقيل':'')])});
+function pyXls(){var R=pyRows(),n=R.length,rows=[['م','الاسم','الكود','الوظيفة','الصافي','أيام العمل','الصافي المستحق','الوحدة (÷30)','الإجازة المستحقة','إجازات مأخوذة','إجازات متبقية','Double Shifts','أيام الإضافي','مبلغ الإضافي (×1.5)','أيام الغياب','وحدات خصم الغياب','خصم الغياب','الجزاءات','قيمة التعويض','التعويض المستحق','الإجمالي','ملاحظات','أيام خصم الجزاءات','خصم الجزاءات']];
+  R.forEach(function(r,i){var q=i+2;rows.push([i+1,r.n,r.k,r.cat,r.net,r.pd,{f:'ROUND(E'+q+'*F'+q+'/30,2)',v:r.er},{f:'ROUND(E'+q+'/30,2)',v:r.unit},r.ent,r.tk,{f:'MAX(0,I'+q+'-J'+q+')',v:r.rem},r.ds,{f:'K'+q+'+L'+q,v:r.ex},{f:'ROUND(M'+q+'*H'+q+'*1.5,2)',v:r.ot},r.ab,r.du,{f:'ROUND(P'+q+'*H'+q+',2)',v:r.dd},r.pen,r.comp,{f:'IF(AND(O'+q+'=0,R'+q+'=0),S'+q+',0)',v:r.cp},{f:'G'+q+'+N'+q+'+T'+q+'-Q'+q+'-X'+q,v:r.tot},(r.out?'OUT':'')+(r.rs?(r.out?' / ':'')+'مستقيل':''),r.pdy,{f:'ROUND(W'+q+'*H'+q+',2)',v:r.pdd}])});
   var sum=function(c,k){return{f:'SUM('+c+'2:'+c+(n+1)+')',v:r2(R.reduce(function(a,r){return a+r[k]},0))}};
-  rows.push(['','الإجمالي','','','','',sum('G','er'),'','','','','','',sum('N','ot'),'','',sum('Q','dd'),'','',sum('T','cp'),sum('U','tot'),'']);
-  xlsxOut(rows,[5,34,12,10,12,10,14,12,10,10,10,8,10,14,10,12,12,10,12,14,14,12],'payroll-'+pid()+'.xlsx')}
+  rows.push(['','الإجمالي','','','','',sum('G','er'),'','','','','','',sum('N','ot'),'','',sum('Q','dd'),'','',sum('T','cp'),sum('U','tot'),'','',sum('X','pdd')]);
+  xlsxOut(rows,[5,34,12,10,12,10,14,12,10,10,10,8,10,14,10,12,12,10,12,14,14,12,12,12],'payroll-'+pid()+'.xlsx')}
 function ppUi(){
   ppUg();
   var p=RCF=='p',a=$('ppx'),b=$('pps');if(b)b.style.display=p?'':'none';
@@ -1003,7 +1006,7 @@ var TMP0=['البوابه الرئيسيه','الإداري','ميديكوم','L
 function tmPts(){var o=TMP0.slice();((RO.f||{}).pts||[]).forEach(function(p){if(o.indexOf(p)<0)o.push(p)});return o}
 function tmGet(s){return(((RO.f||{}).tm||{})[key(RCD)+'_'+s])||{}}
 function tmSet(s,o){var t=Object.assign({},(RO.f||{}).tm),k=key(RCD)+'_'+s;t[k]=Object.assign({},t[k],o);var ks=Object.keys(t);if(ks.length>80){ks.sort();delete t[ks[0]]}RO.f=Object.assign({},RO.f,{tm:t});saveRO();rcRender()}
-function tmSplit(C,s){var T=tmGet(s),ids=C.ind.map(function(e){return e.i}),nS=tmN(s,tmK()),l=T.l||ids.slice(-nS),sel=[],j;
+function tmSplit(C,s){var T=tmGet(s),ids=C.ind.map(function(e){return e.i}),nS=tmN(s,tmK()),P0=T.p||{},au=C.ind.filter(function(e){return/lms/i.test(String(P0[e.i]||''))}).map(function(e){return e.i}),l=T.l||au,sel=[],j;
   for(j=0;j<nS;j++){var id=l[j]||'';sel.push(ids.indexOf(id)>=0&&sel.indexOf(id)<0?id:'')}
   var st=[],ld=[];C.ind.forEach(function(e){if(sel.indexOf(e.i)>=0)st.push(e);else ld.push(e)});
   st.sort(function(a,b){return sel.indexOf(a.i)-sel.indexOf(b.i)});
@@ -1140,6 +1143,8 @@ function rpParse(txt){
 function rpDk(n){var q=RPM.dk.split('-');return key(new Date(+q[0],+q[1]-1,+q[2]+n))}
 function rpCheck(r,c,pend){
   var id=r.id,dk=RPM.dk,ex=get(id,dk),val=r.st;
+  if(jBef(id,dk))return'before his first working day ('+jDay(id)+')';
+  if(val=='V'){var jv=jVok(id,dk);if(jv)return jv}
   if(ex=='R')return'blocked day (OUT)';
   if(val=='V'&&ex!='V'&&tot(id).V>=5)return'max five V in the period';
   if(val=='V'&&c.gi>=2){var cn=0;RPM.C.forEach(function(q){if(q.id!=id&&q.gi>=2&&q.night==c.night){var v=pend.hasOwnProperty(q.id)?pend[q.id]:get(q.id,dk);if(v=='V')cn++}});if(cn>=2)return'already 2 guards on leave in this shift'}
@@ -1171,29 +1176,33 @@ function rpCalc(){
   var sr=R.rows.filter(function(r){return r.k=='s'})[0],rs=C.filter(function(c){return c.gi==1&&c.night==(sh=='N')})[0];
   R.reg=rs||null;R.actOK=!!(sr&&sr.id&&rs&&sr.id!=rs.id);
   var regOut=!!rs&&(R.rows.some(function(r){return r.k=='l'&&r.id==rs.id})||['V','Z','C','A','S','SM'].indexOf(get(rs.id,dk))>=0);
-  R.act=R.actOK&&(R.actM!=null?R.actM:regOut)}
+  R.act=R.actOK&&(R.actM!=null?R.actM:regOut);
+  var pc={};R.pw=[];R.rows.forEach(function(r){if(r.k!='p'||!r.id||['D','N','DS'].indexOf(r.st)<0)return;var po=rpP(r);if(!po||['أخرى','غير محدد'].indexOf(po)>=0)return;var q=rpPost(po);pc[q]=(pc[q]||0)+1});
+  Object.keys(pc).forEach(function(q){var cp0=sfCap(q,sh);if(pc[q]>cp0)R.pw.push('Post "'+q+'" has '+pc[q]+' people - the limit is '+cp0+' per shift')})}
 function rpBuild(){
   var R=RPM,P=R.P,sh=R.shift,old=R.rows||[],mem={};
   old.forEach(function(r){mem[r.k+':'+r.raw]=r});
   R.dk=key(R.date);R.C=rpCands();var rows=[];
-  var add=function(k,raw,x){var r=Object.assign({k:k,raw:raw,post:'',ds:false,type:'V',mid:null,mst:null},x||{}),o2=mem[k+':'+raw];if(o2){r.mid=o2.mid;r.mst=o2.mst}rows.push(r)};
+  var add=function(k,raw,x){var r=Object.assign({k:k,raw:raw,post:'',ds:false,type:'V',mid:null,mst:null,mpo:null},x||{}),o2=mem[k+':'+raw];if(o2){r.mid=o2.mid;r.mst=o2.mst;r.mpo=o2.mpo}rows.push(r)};
   if(P.sup)add('s',P.sup,{post:'مشرف'});
   P.people.forEach(function(p){add('p',p.raw,{post:p.post,ds:p.ds})});
   P.leave.forEach(function(l){add('l',l.raw,{type:l.type})});
   rows.forEach(function(r){var m=rpMatch(r.raw,sh,R.C);r.auto=m.id;r.conf=m.conf;r.alts=m.alts});
   R.rows=rows;rpCalc()}
 function rpEnsure(d){var Y2=d.getFullYear(),M2=d.getMonth();if(d.getDate()>=26){M2++;if(M2>11){M2=0;Y2++}}if(Y2!=Y||M2!=M){Y=Y2;M=M2;return load()}return Promise.resolve()}
-function rpPost(label){var n=rpNorm(label).replace(/\s+/g,'');if(!n)return'';var pts=tmPts(),i;for(i=0;i<pts.length;i++){var q=rpNorm(pts[i]).replace(/\s+/g,'');if(q&&(q==n||(q.length>=3&&n.length>=3&&(q.indexOf(n)>=0||n.indexOf(q)>=0))))return pts[i]}return label}
+function rpP(r){return r.mpo!=null?r.mpo:(r.post||'')}
+function rpPOpts(cur){var pts=tmPts(),c=(['أخرى','غير محدد'].indexOf(cur)>=0)?'':rpPost(cur);return'<option value="">— post —</option>'+pts.map(function(p){return'<option value="'+esc(p)+'"'+(p==c?' selected':'')+'>'+esc(p)+'</option>'}).join('')+(c&&pts.indexOf(c)<0?'<option value="'+esc(c)+'" selected>'+esc(c)+'</option>':'')}
+function rpPost(label){if(/lms/i.test(label)){var pl=tmPts().filter(function(q){return/lms/i.test(q)})[0];if(pl)return pl}var n=rpNorm(label).replace(/\s+/g,'');if(!n)return'';var pts=tmPts(),i;for(i=0;i<pts.length;i++){var q=rpNorm(pts[i]).replace(/\s+/g,'');if(q&&(q==n||(q.length>=3&&n.length>=3&&(q.indexOf(n)>=0||n.indexOf(q)>=0))))return pts[i]}return label}
 function rpApply(){
   var R=RPM,dk=R.dk,sh=R.shift,sk=sh=='D'?'d':'n',o={},n=0,skip=0,all=R.rows.concat(R.nr),al=Object.assign({},(RO.f||{}).alias||{}),tm=Object.assign({},(RO.f||{}).tm),pts=((RO.f||{}).pts||[]).slice(),pp=Object.assign({},(tm[dk+'_'+sk]||{}).p);
   all.forEach(function(r){
     if(!r.id)return;
     if(r.st&&r.st!=r.ex){if(r.blk){skip++;return}o[r.id+'_'+dk]=r.st;n++}
-    if(r.k=='p'&&R.posts&&r.post&&['أخرى','غير محدد'].indexOf(r.post)<0&&(r.st||r.ex)){var po=rpPost(r.post);pp[r.id]=po;if(pts.indexOf(po)<0&&tmPts().indexOf(po)<0)pts.push(po)}
+    if(r.k=='p'&&R.posts&&rpP(r)&&['أخرى','غير محدد'].indexOf(rpP(r))<0&&(r.st||r.ex)){var po=rpPost(rpP(r));pp[r.id]=po;if(pts.indexOf(po)<0&&tmPts().indexOf(po)<0)pts.push(po)}
     if(r.k!='x'&&(r.mid!=null||r.conf!='ok')){var kk=rpToks(r.raw).join('');if(kk)al[kk]=r.id}});
   var f=Object.assign({},RO.f),ak=Object.keys(al);if(ak.length>300)ak.slice(0,ak.length-300).forEach(function(k){delete al[k]});
   f.alias=al;
-  if(R.posts){tm[dk+'_'+sk]=Object.assign({},tm[dk+'_'+sk],{p:pp});var tk0=Object.keys(tm);if(tk0.length>80){tk0.sort();delete tm[tk0[0]]}f.tm=tm;f.pts=pts.slice(-40)}
+  if(R.posts){var lmsIds=[];all.forEach(function(r){if(r.k=='p'&&r.id&&(r.st||r.ex)&&/lms/i.test(pp[r.id]||''))lmsIds.push(r.id)});tm[dk+'_'+sk]=Object.assign({},tm[dk+'_'+sk],{p:pp,l:lmsIds.slice(0,tmN(sk,dk))});var tk0=Object.keys(tm);if(tk0.length>80){tk0.sort();delete tm[tk0[0]]}f.tm=tm;f.pts=pts.slice(-40)}
   var sr=R.rows.filter(function(r){return r.k=='s'})[0];
   if(R.act&&sr&&sr.id){var ac=Object.assign({},f.act);ac[dk+'_'+sk]=sr.id;f.act=ac}
   var rp=Object.assign({},f.rpt);rp[dk+'_'+sh]={t:R.txt.slice(0,6000),at:Date.now()};var rk=Object.keys(rp).sort();while(rk.length>40){delete rp[rk.shift()]}f.rpt=rp;
@@ -1212,12 +1221,13 @@ function rpPick(r,i,kind){
 function rpRow(r,i,kind){
   var C=RPM.C,c=r.id?C.filter(function(x){return x.id==r.id})[0]:null,col=r.k=='x'?'#8a8a82':(r.id?RPS[r.conf]:RPS.none);
   var h='<div style="border-left:4px solid '+col+';padding:8px 10px;margin:6px 0;background:rgba(128,128,128,.13);border-radius:8px">';
-  if(r.k!='x')h+='<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b dir="auto">'+(c?esc(c.name):'?')+'</b><small dir="auto" style="color:var(--mu,#888);text-align:right">'+esc(r.raw)+(r.post&&r.k!='l'?' · '+esc(r.post):'')+(r.ds?' · (تطبيق)':'')+'</small></div>';
+  if(r.k!='x')h+='<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b dir="auto">'+(c?esc(c.name):'?')+'</b><small dir="auto" style="color:var(--mu,#888);text-align:right">'+esc(r.raw)+(rpP(r)&&r.k=='p'?' · '+esc(rpP(r)):'')+(r.ds?' · (تطبيق)':'')+'</small></div>';
   else h+='<div dir="auto"><b>'+esc(r.raw)+'</b></div>';
   if(r.k!='x'&&(r.conf!='ok'||!r.id||r.mid!=null))h+=rpPick(r,i,kind);
   h+='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><select style="padding:8px;font-size:15px;background:var(--bg,#fff);color:var(--tx,#000);border:1px solid var(--mu,#888);border-radius:8px" onchange="rpSet(\''+kind+'\','+i+',\'st\',this.value)">'+rpOpts(r.st)+'</select>';
   if(r.ex)h+='<small style="color:var(--mu,#888)">now: '+r.ex+'</small>';
   h+='</div>';
+  if(r.k=='p')h+='<div style="margin-top:4px"><select dir="auto" style="width:100%;padding:8px;font-size:14px;background:var(--bg,#fff);color:var(--tx,#000);border:1px solid var(--mu,#888);border-radius:8px" onchange="rpSet(\''+kind+'\','+i+',\'po\',this.value)">'+rpPOpts(rpP(r))+'</select></div>';
   if(r.blk)h+='<div style="color:#d64545;font-size:13px">⛔ '+esc(r.blk)+' - will be skipped</div>';
   if(r.w)h+='<div style="color:#e0a100;font-size:13px">⚠ '+esc(r.w)+'</div>';
   return h+'</div>'}
@@ -1235,6 +1245,7 @@ function rpHtml(){
   h+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px"><input type="date" value="'+dv+'" style="'+inp+'" onchange="rpHdr(\'d\',this.value)"><select style="'+inp+'" onchange="rpHdr(\'s\',this.value)"><option value="D"'+(R.shift=='D'?' selected':'')+'>D · day report</option><option value="N"'+(R.shift=='N'?' selected':'')+'>N · night report</option></select></div>';
   var dsf=pr.filter(function(r){return r.ds}).length,dsm=P.dsCount==null?'':(P.dsCount==dsf?' · تطبيق '+dsf+' ✓':' · ⚠ تطبيق: found '+dsf+', message says '+P.dsCount);
   h+=rpVerHtml();
+  (R.pw||[]).forEach(function(t){h+='<div style="color:#d64545;font-weight:600">⚠ '+esc(t)+'</div>'});
   var okc=P.count==null?'':(P.count==pr.length?' ✓ matches the '+P.count+' in the message':' ⚠ the message says '+P.count);
   h+='<div style="font-size:13px;color:var(--mu,#888);margin-bottom:6px">'+pr.length+' present found'+okc+dsm+' · '+lv.length+' on leave'+(P.empty.length?' · '+P.empty.length+' empty post'+(P.empty.length>1?'s':'')+' ('+esc(P.empty.join('، '))+')':'')+(!P.shift?' · ⚠ shift not found in the message':'')+(!P.date?' · ⚠ date not found in the message':'')+'</div>';
   if(sr){h+='<div style="font-weight:700;margin-top:10px">Supervisor (مشرف)</div>'+rpRow(sr,R.rows.indexOf(sr),'r');
@@ -1253,6 +1264,7 @@ function rpHtml(){
 function rpDraw(){var R=RPM,b=$('rpb'),y=b?b.scrollTop:0,o=rpHtml();b.innerHTML=o.html;b.scrollTop=y;var a=$('rpa');a.textContent='Apply ('+o.cnt+')';a.disabled=!o.cnt;a.style.opacity=o.cnt?1:.45}
 function rpSet(kind,i,f,v){var R=RPM,r=kind=='x'?R.nr[i]:R.rows[i];if(!r)return;
   if(f=='id'){r.mid=v;r.mst=null;if(kind=='r'){}}
+  else if(f=='po'){r.mpo=v}
   else{if(kind=='x'){R.nrm=R.nrm||{};R.nrm[r.id]={mst:v};r.mst=v}else r.mst=v}
   rpCalc();rpDraw()}
 function rpAct(v){RPM.actM=!!v;rpCalc();rpDraw()}
@@ -1303,11 +1315,12 @@ function cyrb53(str,seed){var h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;for(var i=0,
 function sfCanon(o){var tk=function(s){return rpToks(s).join('')},pn=function(s){return rpNorm(s).replace(/[^ا-يa-z0-9]/g,'').replace(/\d+$/,'')};
   return JSON.stringify({d:o.d,s:o.s,u:tk(o.u||''),p:o.p.map(function(x){return tk(x[0])+'~'+pn(x[1])+'~'+(x[2]?1:0)}).sort(),l:o.l.map(function(x){return tk(x[0])+'~'+x[1]}).sort()})}
 function sfCode(K,o){return('000000'+cyrb53(K+'|'+sfCanon(o),7).toString(36).toUpperCase()).slice(-6)}
+function sfCap(po,sh){var n=rpNorm(po).replace(/[^ا-يa-z0-9]/g,'').replace(/^ال/,'');if(!n||n=='غيرمحدد')return 99;if(/^بوابه/.test(n)||n=='اداري')return 99;if(/lms/.test(n))return sh=='N'?2:1;return 1}
 function sfKeyMake(){var a=new Uint8Array(10);crypto.getRandomValues(a);return Array.prototype.map.call(a,function(b){return(b%36).toString(36)}).join('')}
 function sfLink(){
   if(!(RO.f||{}).sfk){RO.f=Object.assign({},RO.f,{sfk:sfKeyMake()});saveRO()}
-  var C=rpCands().filter(function(c){return c.gi>=1}),P=tmPts().slice(),nz=function(x){return rpNorm(x).replace(/\s+/g,'')};
-  if(!P.some(function(p){return nz(p)==nz('مخزن LMS')}))P.push('مخزن LMS');
+  var C=rpCands().filter(function(c){return c.gi>=1}),P=[];tmPts().forEach(function(p){var q=/lms/i.test(p)?'مخزن LMS':p;if(P.indexOf(q)<0)P.push(q)});
+  if(!P.some(function(p){return/lms/i.test(p)}))P.push('مخزن LMS');
   var o={v:2,k:RO.f.sfk,P:P,L:C.map(function(c){return[c.id,c.name,c.night?1:0,c.gi]}),S:{}},sd=C.filter(function(c){return c.gi==1&&!c.night})[0],sn=C.filter(function(c){return c.gi==1&&c.night})[0];
   if(sd)o.S.D=sd.id;if(sn)o.S.N=sn.id;
   return sfPack(o).then(function(t){return RO.f.sfurl+'#sf='+t})}
